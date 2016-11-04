@@ -1,0 +1,29 @@
+{
+  "name": "botrosseris",
+  "version": "1.0.0",
+  "description": "A JavaScript Bot using the Eris Library.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node Index.js"
+  },
+  "keywords": [
+    "bot",
+    "discord",
+    "eris"
+  ],
+  "author": "Tristan Deschamps",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tris790/boteris.git"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.4.6",
+    "bufferutil": "^1.2.1",
+    "eris": "github:abalabahaha/eris#dev",
+    "eventemitter3": "^2.0.2",
+    "ffmpeg": "0.0.4",
+    "node-opus": "^0.2.2",
+    "youtube-dl": "^1.11.1"
+  }
+}
