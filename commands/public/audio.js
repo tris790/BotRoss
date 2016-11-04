@@ -15,7 +15,9 @@ function Install(bot) {
                     connection.pause();
                     connection.setVolume(0.05);
                     connection.resume();
-                    connection.play(audio, { inlineVolume: true });
+                    connection.play(audio, {
+                        inlineVolume: true
+                    });
                     bot.createMessage(msg.channel.id, `Now playing **${audio}**`);
                     connection.once("end", () => {
                         bot.createMessage(msg.channel.id, `Finished **${audio}**`);
@@ -27,10 +29,10 @@ function Install(bot) {
             });
         }
     }, {
-            description: "Play a audio file.",
-            fullDescription: "Play a audio file.",
-            usage: "<AudioFileName>"
-        });
+        description: "Play a audio file.",
+        fullDescription: "Play a audio file.",
+        usage: "<AudioFileName>"
+    });
     var test = bot.registerCommand("record", (msg, args) => {
         try {
             var t = bot.joinVoiceChannel(msg.member.voiceState.channelID).catch((err) => {
@@ -65,8 +67,7 @@ function Install(bot) {
             connection.setVolume(vol);
             connection.resume();
             bot.createMessage(msg.channel.id, `Volume set to ${vol}.`);
-        }
-        else
+        } else
             bot.createMessage(msg.channel.id, `${args[0]} is not a valid value!`);
     }, {});
 
@@ -75,20 +76,22 @@ function Install(bot) {
             const fs = require('fs');
             const youtubedl = require('youtube-dl');
             let isBig = false;
-            youtubedl.getInfo(args[0], ['-f', '(mp3/bestaudio)'], function (err, info) {
+            if (!fs.existsSync("./audio")) {
+                fs.mkdirSync("./audio");
+            }
+            youtubedl.getInfo(args[0], ['-f', '(mp3/bestaudio)'], function(err, info) {
                 if (err) throw err;
                 if (info.filesize > 10000000 && info.filesize != null) {
                     bot.createMessage(msg.channel.id, `File too big (${Math.round(info.filesize / 1000000)}MB), 10MB max.`)
                     isBig = true;
-                }
-                else {
+                } else {
                     bot.createMessage(msg.channel.id, "Download started!");
-                    const download = youtubedl(args[0], ['-f', 'mp3/bestaudio'], {}, function (err, a) {
+                    const download = youtubedl(args[0], ['-f', 'mp3/bestaudio'], {}, function(err, a) {
                         console.log(err);
                     });
                     download.on("info", info => {
                         var writter = download.pipe(fs.createWriteStream(`audio/${info.title}.${info.ext}`));
-                        writter.once("close", function () {
+                        writter.once("close", function() {
                             bot.createMessage(msg.channel.id, `Download finished!\n${info.title}.${info.ext}`);
                         });
                     });
@@ -101,7 +104,7 @@ function Install(bot) {
     }, {});
     var extractors = bot.registerCommand("extractors", (msg, args) => {
         var youtubedl = require('youtube-dl');
-        youtubedl.getExtractors(true, function (err, list) {
+        youtubedl.getExtractors(true, function(err, list) {
             console.log('Found ' + list.length + ' extractors');
             for (var i = 0; i < list.length; i++) {
                 console.log(list[i]);
