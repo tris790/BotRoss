@@ -14,7 +14,7 @@ function Install(bot) {
                 connection.pause();
                 connection.setVolume(0.10);
                 connection.resume();
-                connection.play(fileName);
+                connection.play(`./audio/${fileName}`);
                 bot.createMessage(msg.channel.id, `Now playing **${fileName}**`);
                 connection.once("end", () => {
                     bot.createMessage(msg.channel.id, `Finished **${fileName}**`);
