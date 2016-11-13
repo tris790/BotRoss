@@ -3,7 +3,7 @@
 function Install(bot) {
     var playCommand = bot.registerCommand("play", (msg, args) => {
         if (args.length > 0) {
-            var audio = args.join(" ");
+            var fileName = args.join(" ");
             bot.joinVoiceChannel(msg.member.voiceState.channelID).catch((err) => {
                 bot.createMessage(msg.channel.id, "Error joining voice channel: " + err.message);
                 console.log(err);
@@ -11,27 +11,20 @@ function Install(bot) {
                 if (connection.playing) {
                     connection.stopPlaying();
                 }
-                try {
-                    connection.pause();
-                    connection.setVolume(0.05);
-                    connection.resume();
-                    connection.play(audio, {
-                        inlineVolume: true
-                    });
-                    bot.createMessage(msg.channel.id, `Now playing **${audio}**`);
-                    connection.once("end", () => {
-                        bot.createMessage(msg.channel.id, `Finished **${audio}**`);
-                    });
-                } catch (error) {
-                    console.log(error);
-                }
-
+                connection.pause();
+                connection.setVolume(0.10);
+                connection.resume();
+                connection.play(fileName);
+                bot.createMessage(msg.channel.id, `Now playing **${fileName}**`);
+                connection.once("end", () => {
+                    bot.createMessage(msg.channel.id, `Finished **${fileName}**`);
+                });
             });
         }
     }, {
         description: "Play a audio file.",
         fullDescription: "Play a audio file.",
-        usage: "<AudioFileName>"
+        usage: "<AudioFileName.Extension>"
     });
     var test = bot.registerCommand("record", (msg, args) => {
         try {
@@ -70,8 +63,7 @@ function Install(bot) {
         } else
             bot.createMessage(msg.channel.id, `${args[0]} is not a valid value!`);
     }, {});
-
-    var youtube = bot.registerCommand("yt", (msg, args) => {
+    var audioDl = bot.registerCommand("dl", (msg, args) => {
         try {
             const fs = require('fs');
             const youtubedl = require('youtube-dl');
