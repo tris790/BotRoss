@@ -33,6 +33,10 @@ function Install(bot) {
     }, {
 
         });
+    var shutdown = bot.registerCommand("shutdown", (msg, args) => {
+      bot.createMessage(msg.channel.id, "Shutting down!");
+      process.exit();
+    },{});
 }
 
 module.exports.Install = Install;
