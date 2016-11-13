@@ -1,4 +1,5 @@
 "use strict";
+const Config = require("./config.json");
 
 function Install(bot) {
     var playCommand = bot.registerCommand("play", (msg, args) => {
@@ -12,7 +13,7 @@ function Install(bot) {
                     connection.stopPlaying();
                 }
                 connection.pause();
-                connection.setVolume(0.10);
+                connection.setVolume(Config.Volume);
                 connection.resume();
                 connection.play(`./audio/${fileName}`);
                 bot.createMessage(msg.channel.id, `Now playing **${fileName}**`);
@@ -53,15 +54,10 @@ function Install(bot) {
     }, {});
     var volume = bot.registerCommand("volume", (msg, args) => {
         const vol = parseFloat(args[0]);
-        console.log(vol);
         if (vol <= 2 && vol >= 0) {
-            const connection = bot.voiceConnections.get(msg.guild.id);
-            connection.pause();
-            connection.setVolume(vol);
-            connection.resume();
+            Config.Volume = vol;
             bot.createMessage(msg.channel.id, `Volume set to ${vol}.`);
-        } else
-            bot.createMessage(msg.channel.id, `${args[0]} is not a valid value!`);
+        }
     }, {});
     var audioDl = bot.registerCommand("dl", (msg, args) => {
         try {
