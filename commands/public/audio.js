@@ -1,5 +1,5 @@
 "use strict";
-const Config = require("./config.json");
+const Config = require("./../../config.json");
 
 function Install(bot) {
     var playCommand = bot.registerCommand("play", (msg, args) => {
