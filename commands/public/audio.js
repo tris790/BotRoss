@@ -12,10 +12,9 @@ function Install(bot) {
                 if (connection.playing) {
                     connection.stopPlaying();
                 }
-                connection.pause();
-                connection.setVolume(Config.Volume);
-                connection.resume();
-                connection.play(`./audio/${fileName}`);
+                connection.play(`./audio/${fileName}`, {
+                    encoderArgs: ["-af", "volume=Config.Volume"]
+                });
                 bot.createMessage(msg.channel.id, `Now playing **${fileName}**`);
                 connection.once("end", () => {
                     bot.createMessage(msg.channel.id, `Finished **${fileName}**`);
