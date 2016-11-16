@@ -13,7 +13,7 @@ function Install(bot) {
                     connection.stopPlaying();
                 }
                 connection.play(`./audio/${fileName}`, {
-                    encoderArgs: ["-af", "volume=Config.Volume"]
+                    encoderArgs: ["-af", `volume=${Config.Volume}`]
                 });
                 bot.createMessage(msg.channel.id, `Now playing **${fileName}**`);
                 connection.once("end", () => {
