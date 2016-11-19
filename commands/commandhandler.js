@@ -2,7 +2,7 @@
 const Admin = require("./private/admin.js");
 const Audio = require("./public/audio.js");
 const General = require("./public/general.js");
-const General = require("./public/fun.js");
+const Fun = require("./public/fun.js");
 const Utils = require("./public/utils.js");
 
 var EventEmitter = require('eventemitter3');
