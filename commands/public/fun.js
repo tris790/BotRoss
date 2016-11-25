@@ -3,7 +3,6 @@
 function Install(bot) {
     var ask = bot.registerCommand("ask", (msg, args) => {
         var response = ["Yes", "No", "Maybe", "I don't care!"];
-        console.log(response);
         var rand = Math.floor(Math.random() * (response.length - 0)) + 0;
         return response[rand];
     }, {
