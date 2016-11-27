@@ -8,10 +8,11 @@ const Eris = require("eris");
 const FS = require("fs");
 
 var bot = new Eris.CommandClient(Auth.discordtoken, {}, {
-    description: Config.Description,
-    owner: Config.Owner,
     prefix: Config.Prefix
 });
+bot.description = Config.Description;
+bot.owner = Config.Owner;
+bot.prefix = Config.Prefix;
 
 var commandHandler = new CommandHandler();
 
@@ -27,5 +28,4 @@ commandHandler.on('installed', () => {
 commandHandler.on("error", (error) =>{
     console.log(error);
 });
-
 bot.connect();
