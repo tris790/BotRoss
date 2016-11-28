@@ -67,7 +67,8 @@ function Install(bot) {
                 fs.mkdirSync("./audio");
             }
             youtubedl.getInfo(args[0], ['-f', '(mp3/bestaudio)'], function(err, info) {
-                if (err) throw err;
+                if (err)
+                    console.log(err);
                 if (info.filesize > 10000000 && info.filesize != null) {
                     bot.createMessage(msg.channel.id, `File too big (${Math.round(info.filesize / 1000000)}MB), 10MB max.`)
                     isBig = true;
