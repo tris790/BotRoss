@@ -22,21 +22,21 @@ function Install(bot) {
             return msg.member.id;
         }
     }, {
-            description: "Get the userID or or someone else's.",
-            fullDescription: "Get the userID or or someone else's.",
-            usage: "<> or <UserName>"
-        });
+        description: "Get the userID or or someone else's.",
+        fullDescription: "Get the userID or or someone else's.",
+        usage: "<> or <UserName>"
+    });
     var userIDCommand = bot.registerCommand("processinfo", (msg, args) => {
         console.log('Node version ................ ' + process.version);
         console.log('Platform .................... ' + process.platform);
         console.log('Memory usage ................ ' + UTIL.inspect(process.memoryUsage()));
     }, {
 
-        });
+    });
     var shutdown = bot.registerCommand("shutdown", (msg, args) => {
-      bot.createMessage(msg.channel.id, "Shutting down!");
-      process.exit();
-    },{});
+        bot.createMessage(msg.channel.id, "Shutting down!");
+        process.exit();
+    }, {});
 }
 
 module.exports.Install = Install;

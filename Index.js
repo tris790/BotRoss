@@ -25,7 +25,7 @@ commandHandler.on('installed', () => {
     console.log("Modules installed!");
 });
 
-commandHandler.on("error", (error) =>{
+commandHandler.on("error", (error) => {
     console.log(error);
 });
 bot.connect();

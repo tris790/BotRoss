@@ -1,4 +1,6 @@
 "use strict";
+const fs = require('fs');
+const youtubedl = require('youtube-dl');
 const Config = require("./../../config.json");
 
 function Install(bot) {
@@ -60,8 +62,6 @@ function Install(bot) {
     }, {});
     var audioDl = bot.registerCommand("dl", (msg, args) => {
         try {
-            const fs = require('fs');
-            const youtubedl = require('youtube-dl');
             let isBig = false;
             if (!fs.existsSync("./audio")) {
                 fs.mkdirSync("./audio");
