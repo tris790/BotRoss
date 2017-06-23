@@ -26,6 +26,7 @@
     "graceful-fs": "^4.1.11",
     "mongoose": "^4.10.8",
     "node-opus": "^0.2.2",
+    "valid-url": "^1.0.9",
     "youtube-dl": "^1.11.1"
   }
 }
