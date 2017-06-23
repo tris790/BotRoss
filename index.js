@@ -4,7 +4,8 @@ const BotRoss = require('./lib/botross.js'),
 		token: Auth.discordtoken,
 		eris: { prefix: '!' }
 	}),
-	MongoDB = require('./middleware/MongoMiddle');
+	MongoDB = require('./middleware/MongoMiddle'),
+	Commands = require('./middleware/CommandsMiddle');
 // ,
 // AbstractCommandPlugin = require('mirai-bot-core/lib/Base/AbstractCommandPlugin');
 
@@ -14,6 +15,8 @@ botross
 	.then(() => {
 		botross.loadMiddleware(new MongoDB());
 	})
+	.then(() => {
+		botross.loadMiddleware(new Commands());
+	})
 	.then(() => botross.initializeConfig())
-	// .then(() => botross.loadCommandPlugin(MongoTest))
 	.catch(e => console.log(e));
