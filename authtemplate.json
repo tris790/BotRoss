@@ -1,3 +1,4 @@
 {
-  "discordtoken":""
+  "discordtoken":"",
+  "dburl":"mongodb://username:password@server:port/dbname"
 }

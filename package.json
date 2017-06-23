@@ -1,6 +1,6 @@
 {
-  "name": "botrosseris",
-  "version": "1.0.0",
+  "name": "botross",
+  "version": "2.0.0",
   "description": "A JavaScript Bot using the Eris Library.",
   "main": "index.js",
   "scripts": {
@@ -23,6 +23,7 @@
     "eris": "github:abalabahaha/eris#dev",
     "eventemitter3": "^2.0.2",
     "ffmpeg": "0.0.4",
+    "mongoose": "^4.10.8",
     "node-opus": "^0.2.2",
     "youtube-dl": "^1.11.1"
   }
