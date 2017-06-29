@@ -75,7 +75,7 @@ function Install(bot) {
 							addSongPlaylist(bot, msg, s, msg.author);
 							playSongs(bot, msg);
 						})
-						.catch(err => console.log(err));
+						.catch(err => bot.createMessage(msg.channel.id, `Error: ${err}`));
 				} else {
 					console.log('Path', song);
 					getSongInfo(song)
@@ -83,7 +83,7 @@ function Install(bot) {
 							addSongPlaylist(bot, msg, s, msg.author);
 							playSongs(bot, msg);
 						})
-						.catch(err => console.log(err));
+						.catch(err => bot.createMessage(msg.channel.id, `Error: ${err}`));
 				}
 			}
 		},
