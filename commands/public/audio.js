@@ -2,66 +2,57 @@
 const fs = require('fs');
 const { is_web_uri } = require('valid-url');
 var youtubedl = require('youtube-dl');
-
 var path = require('path');
-//
-// function joinAudioChannel(bot, msg) {
-// 	return .catch(err => {
-// 		bot.createMessage(
-// 			msg.channel.id,
-// 			'Error joining voice channel: ' + err.message
-// 		);
-// 		console.log(err);
-// 	});
-// }
 
-function addSongPlaylist(bot, song, requestedby) {
+function addSongPlaylist(bot, msg, song, requestedby) {
+	bot.createMessage(
+		msg.channel.id,
+		`${requestedby.username} added: ${song.songname}(${song.size}) to the playlist`
+	);
 	bot.playlist.push({
 		songname: song.songname,
 		size: song.size,
 		artist: song.artist,
 		requestedby
 	});
-	console.log('playlist state1:', bot.playlist);
 }
 
-//Get connection
-function skipSong(bot) {
+function skipSong(bot, msg) {
 	if (bot.playlist.length > 0) {
+		bot.voiceConnections.get(msg.channel.guild.id).stopPlaying();
+		bot.createMessage(
+			msg.channel.id,
+			`Skipping song: ${bot.playlist[0].songname}`
+		);
 		bot.playlist.shift();
-		if (connection.playing) {
-			connection.stopPlaying();
-		}
 		playSongs(bot, channelid);
 	}
 }
 
 function playSongs(bot, msg) {
 	const { id } = msg.channel;
-
 	if (bot.playlist.length > 0) {
 		const current = bot.playlist[0];
 
 		bot
 			.joinVoiceChannel(msg.member.voiceState.channelID, {})
 			.then(connection => {
-				console.log(`Trying to play:./audio/${current.songname}`);
-				if (connection.playing) {
-					connection.stopPlaying();
+				if (!connection.playing) {
+					console.log(`Trying to play:./audio/${current.songname}`);
+					connection.play(`./audio/${current.songname}`, {
+						encoderArgs: ['-af', `volume=${bot.config.Volume}`]
+					});
+					bot.createMessage(id, `Now playing **${current.songname}**`);
+					connection.on('error', err => console.log(err));
+					connection.once('end', () => {
+						bot.createMessage(id, `Finished **${current.songname}**`);
+						bot.playlist.shift();
+						playSongs(bot, msg);
+					});
 				}
-				connection.play(`./audio/${current.songname}`, {
-					encoderArgs: ['-af', `volume=${bot.config.volume}`]
-				});
-				bot.createMessage(channelid, `Now playing **${current.songname}**`);
-				connection.on('error', () => console.log());
-				connection.once('end', () => {
-					bot.createMessage(channelid, `Finished **${current.songname}**`);
-					bot.playlist.shift();
-					playSong(bot, channelid);
-				});
 			});
 	} else {
-		bot.createMessage(channelid, 'Playlist is empty');
+		bot.createMessage(id, 'Playlist is empty');
 	}
 }
 
@@ -79,17 +70,20 @@ function Install(bot) {
 				var song = args.join(' ');
 				if (is_web_uri(song)) {
 					console.log('Url', song);
-					downloadAudio(song).then(s => {
-						addSongPlaylist(bot, s, msg.author);
-						playSongs(bot, msg);
-					});
+					downloadAudio(song)
+						.then(s => {
+							addSongPlaylist(bot, msg, s, msg.author);
+							playSongs(bot, msg);
+						})
+						.catch(err => console.log(err));
 				} else {
 					console.log('Path', song);
-
-					getSongInfo().then(s => {
-						addSongPlaylist(bot, s, msg.author);
-						playSongs(bot, msg);
-					});
+					getSongInfo(song)
+						.then(s => {
+							addSongPlaylist(bot, msg, s, msg.author);
+							playSongs(bot, msg);
+						})
+						.catch(err => console.log(err));
 				}
 			}
 		},
@@ -103,15 +97,24 @@ function Install(bot) {
 	var stop = bot.registerCommand(
 		'stop',
 		(msg, args) => {
-			bot.voiceConnections.get(msg.guild.id).stopPlaying();
+			bot.playlist = [];
+			bot.voiceConnections.get(msg.channel.guild.id).stopPlaying();
 			bot.createMessage(msg.channel.id, 'Audio stopped.');
+		},
+		{}
+	);
+	var skip = bot.registerCommand(
+		'skip',
+		(msg, args) => {
+			console.log(msg);
+			skipSong(bot, msg);
 		},
 		{}
 	);
 	var resume = bot.registerCommand(
 		'resume',
 		(msg, args) => {
-			bot.voiceConnections.get(msg.guild.id).resume();
+			bot.voiceConnections.get(msg.channel.guild.id).resume();
 			bot.createMessage(msg.channel.id, 'Audio resumed.');
 		},
 		{}
@@ -119,7 +122,7 @@ function Install(bot) {
 	var pause = bot.registerCommand(
 		'pause',
 		(msg, args) => {
-			bot.voiceConnections.get(msg.guild.id).pause();
+			bot.voiceConnections.get(msg.channel.guild.id).pause();
 			bot.createMessage(msg.channel.id, 'Audio paused.');
 		},
 		{}
@@ -148,7 +151,6 @@ function Install(bot) {
 				var file = path.join('./audio', info._filename);
 				video.pipe(fs.createWriteStream(file));
 			});
-
 			video.on('end', () => {
 				console.log('Done downloading');
 				return resolve({
@@ -163,59 +165,6 @@ function Install(bot) {
 		});
 	}
 
-	// var audioDl = bot.registerCommand(
-	// 	'dl',
-	// 	(msg, args) => {
-	// 		try {
-	// 			let isBig = false;
-	// 			if (!fs.existsSync('./audio')) {
-	// 				fs.mkdirSync('./audio');
-	// 			}
-	// 			youtubedl.getInfo(args[0], ['-f', '(mp3/bestaudio)'], function(
-	// 				err,
-	// 				info
-	// 			) {
-	// 				if (err || !info) {
-	// 					console.log(err);
-	// 					return err;
-	// 				}
-	// 				if (info.filesize > 10000000 && info.filesize != null) {
-	// 					bot.createMessage(
-	// 						msg.channel.id,
-	// 						`File too big (${Math.round(
-	// 							info.filesize / 1000000
-	// 						)}MB), 10MB max.`
-	// 					);
-	// 					isBig = true;
-	// 				} else {
-	// 					bot.createMessage(msg.channel.id, 'Download started!');
-	// 					const download = youtubedl(
-	// 						args[0],
-	// 						['-f', 'mp3/bestaudio'],
-	// 						{},
-	// 						function(err, a) {
-	// 							console.log(err);
-	// 						}
-	// 					);
-	// 					download.on('info', info => {
-	// 						var writter = download.pipe(
-	// 							fs.createWriteStream(`audio/${info.title}.${info.ext}`)
-	// 						);
-	// 						writter.once('close', function() {
-	// 							bot.createMessage(
-	// 								msg.channel.id,
-	// 								`Download finished!\n${info.title}.${info.ext}`
-	// 							);
-	// 						});
-	// 					});
-	// 				}
-	// 			});
-	// 		} catch (error) {
-	// 			console.log(error);
-	// 		}
-	// 	},
-	// 	{}
-	// );
 	var extractors = bot.registerCommand(
 		'extractors',
 		(msg, args) => {
