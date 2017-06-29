@@ -69,7 +69,7 @@ function Install(bot) {
 			if (args.length > 0) {
 				var song = args.join(' ');
 				if (is_web_uri(song)) {
-					console.log('Url', song);
+					bot.createMessage(msg.channel.id, `Downloading: ${song}`);
 					downloadAudio(song)
 						.then(s => {
 							addSongPlaylist(bot, msg, s, msg.author);
@@ -147,7 +147,6 @@ function Install(bot) {
 				size = info.size;
 				name = info._filename;
 
-				console.log('Got video info');
 				var file = path.join('./audio', info._filename);
 				video.pipe(fs.createWriteStream(file));
 			});
