@@ -40,8 +40,9 @@ function Install(bot) {
     "processinfo",
     (msg, args) => {
       return `Node version: ${process.version}
-		Platform: ${process.platform}
-		Memory usage${UTIL.inspect(process.memoryUsage())}`;
+Platform: ${process.platform}
+Memory usage: 
+  ${UTIL.inspect(process.memoryUsage())}`;
     },
     {
       description: "Nerd stats",
