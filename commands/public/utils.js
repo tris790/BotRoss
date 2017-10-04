@@ -39,10 +39,21 @@ function Install(bot) {
   var userIDCommand = bot.registerCommand(
     "processinfo",
     (msg, args) => {
-      return `Node version: ${process.version}
+      const data = {
+        embed: {
+          description: `Node version: ${process.version}
 Platform: ${process.platform}
 Memory usage: 
-  ${UTIL.inspect(process.memoryUsage())}`;
+  ${UTIL.inspect(process.memoryUsage())}`,
+          color: 8374646,
+          timestamp: "2017-10-04T00:18:27.871Z",
+          thumbnail: {
+            url:
+              "http://www.freeiconspng.com/uploads/performance-icon-png-6.png"
+          }
+        }
+      };
+      client.createMessage(msg.channel.id, data);
     },
     {
       description: "Nerd stats",
