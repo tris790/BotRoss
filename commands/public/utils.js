@@ -39,7 +39,7 @@ function Install(bot) {
   var userIDCommand = bot.registerCommand(
     "processinfo",
     (msg, args) => {
-      const data = {
+      return {
         embed: {
           description: `Node version: ${process.version}
 Platform: ${process.platform}
@@ -53,7 +53,6 @@ Memory usage:
           }
         }
       };
-      client.createMessage(msg.channel.id, data);
     },
     {
       description: "Nerd stats",
