@@ -49,7 +49,7 @@ function Install(bot) {
             {
               name: "Help",
               value: `Type: ${bot.config
-                .prefix}help to get a list of commands.`,
+                .Prefix}help to get a list of commands.`,
               inline: false
             }
           ],
