@@ -11,7 +11,8 @@ function Install(bot) {
     {
       description: "Asks Bot Ross a question.",
       fullDescription: "The bot will answer your question.",
-      usage: "<question>"
+      usage: "<question>",
+      aliases: ["OuiOuNon"]
     }
   );
   var choose = bot.registerCommand(
