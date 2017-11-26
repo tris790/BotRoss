@@ -20,6 +20,7 @@
   "dependencies": {
     "bluebird": "^3.5.0",
     "bufferutil": "^3.0.2",
+    "canvas": "^2.0.0-alpha.6",
     "eris": "github:abalabahaha/eris#dev",
     "erlpack": "hammerandchisel/erlpack",
     "eventemitter3": "^2.0.3",
@@ -27,6 +28,7 @@
     "graceful-fs": "^4.1.11",
     "mongoose": "^4.10.8",
     "node-opus": "^0.2.7",
+    "request": "^2.83.0",
     "sodium-native": "^1.10.3",
     "uws": "^8.14.1",
     "valid-url": "^1.0.9",

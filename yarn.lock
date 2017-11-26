@@ -104,6 +104,12 @@ bufferutil@^3.0.2:
     nan "~2.6.0"
     prebuild-install "~2.2.0"
 
+canvas@^2.0.0-alpha.6:
+  version "2.0.0-alpha.6"
+  resolved "https://registry.yarnpkg.com/canvas/-/canvas-2.0.0-alpha.6.tgz#5538c4d3bb3fffcd23c8e0bf2770c9f5b07b543e"
+  dependencies:
+    nan "^2.4.0"
+
 caseless@~0.12.0:
   version "0.12.0"
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
