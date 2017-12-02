@@ -1,12 +1,19 @@
 "use strict";
 const fs = require("fs");
 const request = require("request");
+var crypto = require("crypto");
 
-const { createCanvas, loadImage } = require("canvas");
+const sharp = require("sharp");
 
 function extractNameFromUrl(url) {
+  console.log("extracting:", url);
   let imgName = url.match(/\/([0-z]+)(\.[a-z]{2,4})$/);
+  console.log("reg:", imgName);
+  if (imgName == null)
+    imgName = `${crypto.randomBytes(20).toString("hex")}.jpg`;
   if (imgName.indexOf("/") == 0) imgName = imgName.substring(1);
+
+  console.log("extracted:", imgName);
   return imgName;
 }
 
@@ -18,66 +25,42 @@ function findUser(id, msg) {
   });
 }
 
-function download(uri, filename, callback) {
-  request.head(uri, function(err, res, body) {
-    request(uri)
-      .pipe(fs.createWriteStream(filename))
-      .on("close", callback);
+function download(uri, filename) {
+  const downloadPath = `images/downloaded/${filename}`;
+  return new Promise((resolved, rejected) => {
+    console.log("Stating download");
+    request.head(uri, function(err, res, body) {
+      request(uri)
+        .pipe(fs.createWriteStream(downloadPath))
+        .on("close", () => {
+          resolved(filename);
+        })
+        .on("error", () => {
+          rejected("error downloading");
+        });
+    });
   });
 }
 
-function toImage(hat, url, name) {
-  return new Promise((resolved, rejected) => {
-    let finalFile = { name };
-    const filePath = `images/downloaded/${name}`;
+async function addHat(hat, name) {
+  console.log("Adding Hat");
+  const hatPath = `images/hats/${hat}.png`;
+  const imagePath = `images/downloaded/${name}`;
+  const outputPath = `images/photoshoped/${name}`;
 
-    // Download image
-    download(url, filePath, () => {
-      let canvas;
-      let ctx;
-      let size;
+  console.log("[HAT]", hatPath, "[IMAGE]", imagePath, "[OUTPUT]", outputPath);
 
-      let data = [];
+  const image = sharp(imagePath);
+  const meta = await image.metadata();
 
-      loadImage(filePath).then(image => {
-        size = {
-          height: image.height,
-          width: image.width
-        };
-
-        // Create canvas and add image
-        canvas = createCanvas(image.width, image.height);
-        ctx = canvas.getContext("2d");
-        ctx.drawImage(image, 0, 0, size.width, size.height);
-      });
-
-      loadImage(`images/hats/${hat}.png`).then(hatImage => {
-        // Create and add hat to canvas
-        const hatWidth = size.width / 1.5;
-        const hatHeight = size.height / 1.5;
-        const hatXPos = (size.width - hatWidth) / 2 + hatWidth / 3;
-        const hatYPos = (size.height - hatHeight) / 200;
-
-        ctx.drawImage(hatImage, hatXPos, hatYPos, hatWidth, hatHeight);
-
-        // Save photoshop to disk
-        const out = fs.createWriteStream(`images/photoshoped/${name}`);
-        const stream = canvas.pngStream();
-        stream.on("data", chunk => {
-          out.write(chunk);
-          data.push(chunk);
-        });
-
-        stream.on("end", () => {
-          finalFile.file = Buffer.concat(data);
-          if (finalFile.file) {
-            return resolved(finalFile);
-          }
-          return rejected("Error while photoshopping");
-        });
-      });
-    });
-  });
+  return image
+    .overlayWith(
+      await sharp(hatPath)
+        .resize(Math.floor(meta.width / 1.2), Math.floor(meta.height / 1.5))
+        .toBuffer(),
+      { gravity: sharp.gravity.north }
+    )
+    .toBuffer();
 }
 
 function Install(bot) {
@@ -91,13 +74,21 @@ function Install(bot) {
       let photoshopedFile;
 
       if (args.length === 1) {
+        console.log("Len 1");
         const usr = msg.author;
-        toImage(hat, usr.staticAvatarURL, `user${usr.id}.png`).then(d =>
-          sendImage(bot, msg, d)
-        );
+
+        download(usr.staticAvatarURL, `user${usr.id}.jpg`)
+          .then(name => {
+            addHat(hat, name)
+              .then(file => sendImage(bot, msg, { file, name }))
+              .catch(err => console.log("Error hat", err));
+          })
+          .catch(err => console.log("Error downloading", err));
       }
 
       if (args.length === 2) {
+        console.log("Len 2");
+
         const url = args[1].match(
           /(?:(?:https?:\/\/))[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/=]*(\.jpg|\.png|\.jpeg|\.webp))/
         );
@@ -105,16 +96,23 @@ function Install(bot) {
         if (url) {
           const imgUrl = url[0];
 
-          toImage(hat, imgUrl, extractNameFromUrl(imgUrl)).then(d => {
-            sendImage(bot, msg, d);
-          });
+          download(imgUrl, extractNameFromUrl(imgUrl))
+            .then(name => {
+              addHat(hat, name)
+                .then(file => sendImage(bot, msg, { file, name }))
+                .catch(err => console.log("Error hat", err));
+            })
+            .catch(err => console.log("Error downloading", err));
         } else {
           const usr = findUser(args[1], msg);
           if (usr.id) {
-            const avatarUrl = usr.staticAvatarURL;
-            toImage(hat, avatarUrl, `user${usr.id}.png`).then(d =>
-              sendImage(bot, msg, d)
-            );
+            download(usr.staticAvatarURL, `user${usr.id}.jpg`)
+              .then(name => {
+                addHat(hat, name)
+                  .then(file => sendImage(bot, msg, { file, name }))
+                  .catch(err => console.log("Error hat", err));
+              })
+              .catch(err => console.log("Error downloading", err));
           }
         }
       }
@@ -128,11 +126,8 @@ function Install(bot) {
   );
 }
 
-function sendImage(bot, msg, photoshopedFile) {
-  bot.createMessage(msg.channel.id, "", {
-    file: photoshopedFile.file,
-    name: photoshopedFile.name
-  });
+function sendImage(bot, msg, file) {
+  bot.createMessage(msg.channel.id, "", file);
 }
 
 module.exports.Install = Install;
