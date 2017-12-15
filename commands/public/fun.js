@@ -29,5 +29,30 @@ function Install(bot) {
     }
   );
 }
+var ban = bot.registerCommand(
+  "ban",
+  (msg, args) => {
+    if (args.length == 0) return "ban who?";
+    const userName = args.join(" ");
+    var response = [
+      "Yes",
+      "For sure!",
+      "I hate this guy",
+      "He deserves it",
+      "I don't even know who he is",
+      "Ban HAMMMMMMMER",
+      "Hold my beer, I'll handle this",
+      `Hey @everyone , lets ban ${userName}`,
+      `Bye bye, bye ${userName}`
+    ];
+    var rand = Math.floor(Math.random() * (response.length - 0)) + 0;
+    return response[rand];
+  },
+  {
+    description: "Asks Bot Ross if you should ban someone.",
+    fullDescription: "The bot tell you if you should ban someone.",
+    usage: "<name>"
+  }
+);
 
 module.exports.Install = Install;
