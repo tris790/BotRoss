@@ -58,48 +58,16 @@ function Install(bot) {
     var autism = bot.registerCommand(
         "autism",
         async (msg, args) => {
-            const fetch = require("node-fetch");
-            const URL =
-                "https://psychology-tools.com/autism-spectrum-quotient/score.php";
-            const DATA = {
-                number_of_questions: 50,
-                submit: "Score+my+Answers",
-                valid: 1,
-                start: 1519509223
-            };
-
-            for (let i = 1; i <= 50; i++) {
-                const rnd = Math.round(Math.random());
-                DATA["q" + i] = rnd;
+            let usr = msg.author.username;
+            if (args[0]) {
+                usr = args.join(" ");
             }
-
-            const b = Object.keys(DATA)
-                .map(key => {
-                    return (
-                        encodeURIComponent(key) +
-                        "=" +
-                        encodeURIComponent(DATA[key])
-                    );
-                })
-                .join("&");
-
-            const PARAMS = {
-                method: "POST",
-                body: b,
-                headers: { "Content-Type": "application/x-www-form-urlencoded" }
-            };
-
-            const html = await fetch(URL, PARAMS).then(t => t.text());
-            const result = html.match(
-                /Your score was <span class="score">([0-9]{2})<\/span> out of a possible 50/
-            )[1];
-            return `${msg.author.username} is:  ${result *
-                100 /
-                50}% autistic! (${result} / 50)`;
+            const rand = Math.floor(Math.random() * 100);
+            return `${usr} is:  ${rand}% autistic!`;
         },
         {
             description: "Get your autism level.",
-            fullDescription: "X/50, 50 being really autistic."
+            fullDescription: "0-100, 100 being really autistic."
         }
     );
 }
