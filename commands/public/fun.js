@@ -62,7 +62,7 @@ function Install(bot) {
             if (args[0]) {
                 usr = args.join(" ");
             }
-            const rand = Math.floor(Math.random() * 100);
+            const rand = (Math.random() * 100).toFixed(2);
             return `${usr} is:  ${rand}% autistic!`;
         },
         {
