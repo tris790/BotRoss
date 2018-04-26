@@ -1,4 +1,7 @@
 "use strict";
+const rake = require("node-rake");
+const emoj = require("emoj");
+const emoji = require("moji-translate");
 
 function Install(bot) {
     var ask = bot.registerCommand(
@@ -70,6 +73,26 @@ function Install(bot) {
             fullDescription: "0-100, 100 being really autistic."
         }
     );
+
+    var emojify = bot.registerCommand("emojify", async (msg, args) => {
+        if (args[0]) {
+            const keywords = rake
+                .generate(args.join(" "))
+                .join(" ")
+                .split(" ");
+
+            const emojies = keywords.map(word =>
+                emoji.getAllEmojiForWord(word)
+            );
+
+            return emojies
+                .reduce((acc, cur) => {
+                    acc.push(cur[Math.floor(Math.random() * cur.length)]);
+                    return acc;
+                }, [])
+                .join(" ");
+        }
+    });
 }
 
 module.exports.Install = Install;
